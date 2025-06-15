@@ -1,0 +1,4 @@
+
+图片路径映射
+修改ChartGenerationService.java
+和getRemoteImagePath 方法
