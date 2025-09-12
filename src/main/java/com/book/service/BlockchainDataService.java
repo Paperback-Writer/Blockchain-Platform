@@ -10,46 +10,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 模拟的BlockchainDataService，不会真正访问数据库
+ * Mock BlockchainDataService that does not actually access the database
  */
 @Service
 public class BlockchainDataService {
 
     private BlockchainDataDao blockchainDataDao;
 
-    @Autowired(required = false) // 设置为非必须，避免启动错误
+    @Autowired(required = false) // Set to non-required to avoid startup errors
     public void setBlockchainDataDao(BlockchainDataDao blockchainDataDao) {
         this.blockchainDataDao = blockchainDataDao;
     }
 
     /**
-     * 获取图表数据（返回模拟数据）
+     * Get chart data (returns mock data)
      */
     public List<Object> getChartData(
             String cryptocurrency, 
             String metric, 
             String analysisType
     ) {
-        // 返回模拟数据
+        // Return mock data
         return getMockChartData(cryptocurrency, metric, analysisType);
     }
 
     /**
-     * 批量插入数据（不执行任何操作）
+     * Batch insert data (does not perform any operation)
      */
     @Transactional
     public void saveBlockchainData(List<BlockchainDataEntity> dataList) {
-        // 不执行任何操作
-        System.out.println("模拟保存 " + dataList.size() + " 条数据");
+        // Does not perform any operation
+        System.out.println("Mock saving " + dataList.size() + " records");
     }
     
     /**
-     * 生成模拟数据
+     * Generate mock data
      */
     private List<Object> getMockChartData(String cryptocurrency, String metric, String analysisType) {
         List<Object> mockData = new ArrayList<>();
         
-        // 生成一些随机数据点
+        // Generate some random data points
         for (int i = 0; i < 10; i++) {
             final int index = i;
             mockData.add(new Object() {

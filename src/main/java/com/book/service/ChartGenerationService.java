@@ -24,39 +24,6 @@ public class ChartGenerationService {
     
     private static final String LOCAL_IMAGE_BASE_PATH = PROJECT_BASE_PATH + "/src/main/webapp/static/blockchain-images/";
     
-    // private Map<String, Map<String, String>> scriptPaths = new HashMap<>();
-    
-    // @PostConstruct
-    // public void init() {
-    //     initializeScriptPaths();
-    // }
-    
-    // private void initializeScriptPaths() {
-    //     Map<String, String> bitcoinScripts = new HashMap<>();
-    //     bitcoinScripts.put("Block Size", "/local/scratch/master_project_utxo_2025/data/bitcoin/bitcoin_data/py/Block_Size/Block_Size.py");
-        
-    //     Map<String, String> litecoinScripts = new HashMap<>();
-    //     litecoinScripts.put("Block Size", "/local/scratch/master_project_utxo_2025/data/litecoin/litecoin_data/py/Block_Size/Block_Size.py");
-        
-    //     scriptPaths.put("bitcoin", bitcoinScripts);
-    //     scriptPaths.put("litecoin", litecoinScripts);
-        
-    //     Map<String, String> dogecoinScripts = new HashMap<>();
-    //     dogecoinScripts.put("Block Size", "/local/scratch/master_project_utxo_2025/data/dogecoin/dogecoin_data/py/Block_Size/Block_Size.py");
-    //     scriptPaths.put("dogecoin", dogecoinScripts);
-        
-    //     Map<String, String> bitcashScripts = new HashMap<>();
-    //     bitcashScripts.put("Block Size", "/local/scratch/master_project_utxo_2025/data/bitcash/bitcash_data/py/Block_Size/Block_Size.py");
-    //     scriptPaths.put("bitcash", bitcashScripts);
-        
-    //     Map<String, String> monacoinScripts = new HashMap<>();
-    //     monacoinScripts.put("Block Size", "/local/scratch/master_project_utxo_2025/data/monacoin/monacoin_data/py/Block_Size/Block_Size.py");
-    //     scriptPaths.put("monacoin", monacoinScripts);
-        
-    //     Map<String, String> feathercoinScripts = new HashMap<>();
-    //     feathercoinScripts.put("Block Size", "/local/scratch/master_project_utxo_2025/data/feathercoin/feathercoin_data/py/Block_Size/Block_Size.py");
-    //     scriptPaths.put("feathercoin", feathercoinScripts);
-    // }
     
     private String getScriptPath(String cryptocurrency, String metric) {
         String folderName = metric.replace(" ", "_");

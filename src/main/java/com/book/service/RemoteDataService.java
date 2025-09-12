@@ -28,42 +28,42 @@ public class RemoteDataService {
         try {
             JSch jsch = new JSch();
             
-            // 使用密码认证 - 请替换为实际的服务器信息
+            // Use password authentication - replace with actual server information
             Session session = jsch.getSession("zhongxingdu", "abacus-2.ifi.uzh.ch", 22);
             session.setPassword("my99jsyDu@");
             
-            // 配置 SSH 会话
+            // Configure SSH session
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             session.setConfig(config);
             
-            // 连接
+            // Connect
             session.connect();
             
-            // 打开 SFTP 通道
+            // Open SFTP channel
             ChannelSftp channelSftp = (ChannelSftp) session.openChannel("sftp");
             channelSftp.connect();
             
-            // 远程文件路径
+            // Remote file path
             String remoteFilePath = "/path/to/data/" + cryptocurrency + "/" + metric + ".json";
             
-            // 读取文件
+            // Read file
             InputStream inputStream = channelSftp.get(remoteFilePath);
             
-            // 使用 Jackson 解析 JSON
+            // Parse JSON using Jackson
             ObjectMapper mapper = new ObjectMapper();
             List<BlockchainData> data = mapper.readValue(
                 inputStream, 
                 new TypeReference<List<BlockchainData>>() {}
             );
             
-            // 关闭连接
+            // Close connections
             channelSftp.disconnect();
             session.disconnect();
             
             return data;
         } catch (Exception e) {
-            // 错误处理
+            // Error handling
             e.printStackTrace();
             return Collections.emptyList();
         }

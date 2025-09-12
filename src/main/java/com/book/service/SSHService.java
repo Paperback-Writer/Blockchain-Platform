@@ -15,32 +15,32 @@ public class SSHService {
     private ChannelExec channel = null;
     
     /**
-     * 连接到远程服务器
-     * @param host 主机地址
-     * @param username 用户名
-     * @param password 密码
-     * @throws JSchException SSH连接异常
+     * Connect to remote server
+     * @param host host address
+     * @param username username
+     * @param password password
+     * @throws JSchException SSH connection exception
      */
     public void connect(String host, String username, String password) throws JSchException {
         JSch jsch = new JSch();
         session = jsch.getSession(username, host, 22);
         session.setPassword(password);
         
-        // 禁用严格主机密钥检查（开发环境使用，生产环境应当谨慎）
+        // Disable strict host key checking (use only in development, be cautious in production)
         Properties config = new Properties();
         config.put("StrictHostKeyChecking", "no");
         session.setConfig(config);
         
         session.connect();
-        System.out.println("已连接到服务器: " + host);
+        System.out.println("Connected to server: " + host);
     }
     
     /**
-     * 执行远程命令
-     * @param command 要执行的命令
-     * @return 命令输出内容
-     * @throws JSchException SSH连接异常
-     * @throws IOException 输入输出异常
+     * Execute remote command
+     * @param command command to execute
+     * @return command output
+     * @throws JSchException SSH connection exception
+     * @throws IOException input/output exception
      */
     public String executeCommand(String command) throws JSchException, IOException {
         System.out.println("execute command " + command);
@@ -56,7 +56,7 @@ public class SSHService {
         
         channel.connect();
         
-        // 等待命令完成
+        // Wait for command to complete
         while (channel.isConnected()) {
             try {
                 Thread.sleep(100);
@@ -65,7 +65,7 @@ public class SSHService {
             }
         }
         
-        // 如果错误流中有内容，则打印错误信息
+        // If error stream has content, print error message
         if (errorStream.size() > 0) {
             System.out.println("Fail execution " + errorStream.toString());
         }
@@ -74,11 +74,11 @@ public class SSHService {
     }
     
     /**
-     * download from remote
-     * @param remoteFilePath 
-     * @param localFilePath 
-     * @throws JSchException 
-     * @throws SftpException 
+     * Download from remote
+     * @param remoteFilePath remote file path
+     * @param localFilePath local file path
+     * @throws JSchException
+     * @throws SftpException
      */
     public void downloadFile(String remoteFilePath, String localFilePath) throws JSchException, SftpException {
         System.out.println("download - remote path: " + remoteFilePath + ", local path: " + localFilePath);

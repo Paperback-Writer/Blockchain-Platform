@@ -6,10 +6,10 @@ public class BlockchainData {
     private String imagePath;
     private String additionalInfo;
 
-    // 无参构造函数
+    // No-argument constructor
     public BlockchainData() {}
 
-    // 带参数构造函数
+    // Parameterized constructor
     public BlockchainData(String cryptocurrency, String metric, String imagePath) {
         this.cryptocurrency = cryptocurrency;
         this.metric = metric;

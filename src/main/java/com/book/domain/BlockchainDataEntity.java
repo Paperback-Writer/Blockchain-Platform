@@ -9,10 +9,10 @@ public class BlockchainDataEntity {
     private Double yValue;
     private String additionalInfo;
 
-    // 无参构造函数
+    // No-argument constructor
     public BlockchainDataEntity() {}
 
-    // 全参构造函数
+    // All-arguments constructor
     public BlockchainDataEntity(Long id, String cryptocurrency, String metric, 
                                 String analysisType, Double xValue, Double yValue, 
                                 String additionalInfo) {
