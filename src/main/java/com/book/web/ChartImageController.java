@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 图表管理控制器，用于处理AJAX请求获取图表信息
+ * Chart Controller
  */
 @Controller
 public class ChartImageController {
@@ -31,7 +31,7 @@ public class ChartImageController {
     }
     
     /**
-     * 获取指标可用的分析类型
+     * Request available Type
      */
     @RequestMapping(value = "/api/metric-analysis-types", method = RequestMethod.GET)
     @ResponseBody
@@ -47,7 +47,7 @@ public class ChartImageController {
     }
     
     /**
-     * 获取图表图片
+     * RequestChart'Image
      */
     @RequestMapping(value = "/api/chart-images", method = RequestMethod.GET)
     @ResponseBody

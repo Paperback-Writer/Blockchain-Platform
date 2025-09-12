@@ -33,11 +33,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**")
                 .addResourceLocations(
-                    "/static/",                                   // Web应用根目录
-                    "file:src/main/webapp/static/",               // 项目相对路径
-                    "classpath:/static/"                          // 类路径
+                    "/static/",   
+                    "file:src/main/webapp/static/",               
+                    "classpath:/static/"                         
                 )
-                .setCachePeriod(3600);  // 缓存1小时
+                .setCachePeriod(3600);  // buffer 1hour
     }
 
     @Bean

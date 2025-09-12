@@ -1,0 +1,242 @@
+package com.book.service;
+
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.*;
+
+/**
+ * Blockchain metric service class, used to manage metadata and available analysis types for all metrics
+ */
+@Service
+public class MetricService {
+    
+    // Metric mapping cache
+    private final Map<String, Set<String>> metricAnalysisTypes = new HashMap<>();
+    private final Map<String, String> metricDescriptions = new HashMap<>();
+    private final Map<String, Map<String, List<ChartInfo>>> chartInfoMap = new HashMap<>();
+    
+    /**
+     * Chart information class
+     */
+    public static class ChartInfo {
+        private String title;
+        private String path;
+        private String description;
+        
+        public ChartInfo(String title, String path, String description) {
+            this.title = title;
+            this.path = path;
+            this.description = description;
+        }
+        
+        public String getTitle() {
+            return title;
+        }
+        
+        public String getPath() {
+            return path;
+        }
+        
+        public String getDescription() {
+            return description;
+        }
+    }
+    
+    /**
+     * Initialize all metric mappings
+     */
+    @PostConstruct
+    public void initializeMetricMappings() {
+        // Initialize available analysis types for metrics
+        initializeAnalysisTypes();
+        
+        // Initialize metric descriptions
+        initializeMetricDescriptions();
+        
+        // Initialize chart information
+        initializeChartInfo();
+    }
+    
+    /**
+     * Initialize available analysis types for metrics
+     */
+    private void initializeAnalysisTypes() {
+        metricAnalysisTypes.put("Block Size", new HashSet<>(Arrays.asList("static")));
+        metricAnalysisTypes.put("Transaction Fees", new HashSet<>(Arrays.asList("static")));
+        metricAnalysisTypes.put("Fund Flow", new HashSet<>(Arrays.asList("static")));
+        metricAnalysisTypes.put("Gini Index", new HashSet<>(Arrays.asList("static")));
+        metricAnalysisTypes.put("Micro Velocity", new HashSet<>(Arrays.asList("static")));
+        metricAnalysisTypes.put("Inflation", new HashSet<>(Arrays.asList("static")));
+        metricAnalysisTypes.put("Rewards", new HashSet<>(Arrays.asList("static")));
+        metricAnalysisTypes.put("Transaction Throughput", new HashSet<>(Arrays.asList("static")));
+        //metricAnalysisTypes.put("Market Cap and P/E Ratio", new HashSet<>(Arrays.asList("static")));
+    }
+    /**
+     * Initialize metric descriptions
+     */
+    private void initializeMetricDescriptions() {
+        metricDescriptions.put("Block Size", "Heatmap and Scatterplots illustrate the evolution of block sizes over time in the blockchain.");
+        metricDescriptions.put("Transaction Fees", "Analysis of the correlation between transaction fees and amounts helps understand user transaction behavior and network congestion. Timeseries shows how the average number of input and output addresses per transaction has changed from blockchain's inception through the year.");
+        metricDescriptions.put("Fund Flow", "Fund flow analysis shows the direction and scale of fund movements in the blockchain network, helping identify major holders and transaction patterns.");
+        metricDescriptions.put("Gini Index", "The Gini coefficient measures the degree of wealth distribution inequality, analyzing the concentration and distribution of cryptocurrency holdings.");
+        metricDescriptions.put("Micro Velocity", "Micro velocity analyzes cryptocurrency circulation speed in short time frames, reflecting market activity and user transaction behavior. Timeseries tracks the spending behavior of the blockchain's UTXOs. And piechart shows how long coins remained unspent, grouped into different holding period categories");
+        metricDescriptions.put("Inflation", "Analysis of cryptocurrency issuance mechanisms and inflation rates, comparing economic models of different coins.");
+        metricDescriptions.put("Rewards", "Trade-off analysis compares the balance points between security, decentralization, and performance across different blockchains.");
+        metricDescriptions.put("Transaction Throughput", "Transaction throughput reflects the ability and efficiency of blockchain networks to process transactions, a key performance indicator. Timeseries illustrates the transactional throughput");
+        //metricDescriptions.put("Market Cap and P/E Ratio", "Analysis of cryptocurrency market valuation and value assessment metrics, comparing market performance and investment potential of different coins.");
+        metricDescriptions.put("Utxo Active Rate", "UTXO 活跃率跨链对比。");
+        metricDescriptions.put("Daily Coin Destroyed", "每日已销毁币跨链对比。");
+        metricDescriptions.put("Cross-chain Economic Feature Comparison", "跨链经济特征雷达/热力对比。");
+        metricDescriptions.put("Gini Coefficient", "跨链持币不均衡度对比。");
+        metricDescriptions.put("Micro Velocity", "跨链微观速度对比。");
+        metricDescriptions.put("Top 1 Ratio", "第一大地址占比跨链对比。");
+        metricDescriptions.put("Whale Ratio", "鲸鱼占比跨链对比。");
+    }
+    
+    /**
+     * Initialize chart information
+     */
+    private void initializeChartInfo() {
+        // Block Size
+        addChartInfo("Block Size", "static", Arrays.asList(
+            new ChartInfo("Block Size Heatmap", "Heatmap.png",
+                "Shows the distribution of block sizes across different time periods, with red areas indicating larger block sizes."),
+            new ChartInfo("Block Size ScatterPlot", "Scatterplot.png",
+                "Shows statistical distribution characteristics of block sizes, including median, quartile ranges, and outliers.")
+        ));
+
+        // Transaction Fees
+        addChartInfo("Transaction Fees", "static", Arrays.asList(
+            new ChartInfo("Transaction Fee and Amount Correlation Bar Chart", "Barchart.png",
+                "Shows average transaction fees for different amount ranges."),
+            new ChartInfo("Transaction Fee Distribution Pie Chart", "Piechart.png",
+                "Shows the proportion of transactions at different fee levels."),
+            new ChartInfo("Transaction Fee and Amount Scatter Plot", "Scatterplot2.png",
+                "Shows the relationship between fees and amounts for each transaction, reflecting correlation strength.")
+        ));
+
+        // Fund Flow
+        addChartInfo("Fund Flow", "static", Arrays.asList(
+            new ChartInfo("Fund Flow Proportion Chart", "Timeseries.png",
+                "Shows the proportion of fund flows between different types of addresses."),
+            new ChartInfo("Fund Flow Network Graph", "fund_flow_network.png",
+                "Visualizes the fund flow network and relationship strength between major addresses.")
+        ));
+
+        // Gini Index
+        addChartInfo("Gini Index", "static", Arrays.asList(
+            new ChartInfo("Wealth Distribution Heatmap", "Monthly_Gini.png",
+                "Shows the distribution of addresses across different amount ranges.")
+        ));
+
+        // Micro Velocity
+        addChartInfo("Micro Velocity", "static", Arrays.asList(
+            new ChartInfo("MicroVelocity Over Time", "MicroVelocity.png",
+                "Shows micro transaction velocity statistics within different time windows."),
+            new ChartInfo("UTXO Holding Time", "Holding_Time.png",
+                "Shows micro transaction velocity statistics within different time windows.")
+        ));
+
+        // Inflation
+        addChartInfo("Inflation", "static", Arrays.asList(
+            new ChartInfo("Inflation Rate Time Series", "Inflation_Timeseries.png",
+                "Shows the trend of inflation rate changes over time."),
+            new ChartInfo("Issuance Rate Time Series", "Issuance_Timeseries.png",
+                "Shows the trend of Issuance rate changes over time.")
+        ));
+
+        // Rewards (Trade-offs)
+        addChartInfo("Rewards", "static", Arrays.asList(
+            //new ChartInfo("Rewards over time", "reward_per_record.png",
+                //"Show mining rewards over time."),
+            new ChartInfo("Rewards over time", "Standard_Reward.png",
+                "Show standard mining rewards over time."),
+            new ChartInfo("Rewards over time", "Reward.png",
+                 "Show mining rewards over time.")
+        ));
+
+        // Transaction Throughput
+        addChartInfo("Transaction Throughput", "static", Arrays.asList(
+            new ChartInfo("Transaction Throughput Gauge Chart", "Timeseries.png",
+                "Uses a gauge chart to show the comparison between current network transaction processing capacity and design limits.")
+        ));
+
+        //cluster
+        // Cluster - Utxo Active Rate
+        addChartInfo("Utxo Active Rate", "cluster", Arrays.asList(
+            new ChartInfo("UAR Heatmap", "active_rate.png", "UTXO active rate")
+        ));
+
+        // Cluster - Daily Coin Destroyed
+        addChartInfo("Daily Coin Destroyed", "cluster", Arrays.asList(
+            new ChartInfo("DCD Overview", "DCD_Overview.png", "Overview of daily coin destroyed")
+        ));
+
+        // Cluster - Cross-chain Economic Feature Comparison
+        addChartInfo("Cross-chain Economic Feature Comparison", "cluster", Arrays.asList(
+            new ChartInfo("CEC Radar", "economic_comparison_radar.png", "Radar of cross-chain economic features")
+        ));
+
+        // Cluster - Gini Coefficient
+        addChartInfo("Gini Coefficient", "cluster", Arrays.asList(
+            new ChartInfo("gini coefficient", "gini_coefficient.png", "Gini coefficient trend")
+        ));
+
+        // Cluster - Micro Velocity
+        addChartInfo("Micro Velocity", "cluster", Arrays.asList(
+            new ChartInfo("MV Overview", "micro_velocity.png", "Overview of micro velocity")
+        ));
+
+        // Cluster - Top 1 Ratio
+        addChartInfo("Top 1 Ratio", "cluster", Arrays.asList(
+            new ChartInfo("T1R Trend", "top1_ratio.png", "Top 1 ratio trend")
+        ));
+
+        // Cluster - Whale Ratio
+        addChartInfo("Whale Ratio", "cluster", Arrays.asList(
+            new ChartInfo("WR Trend", "WR_Trend.png", "Whale ratio trend"),
+            new ChartInfo("WR Heatmap", "WR_Heatmap.png", "Whale ratio heatmap")
+        ));
+}
+
+    
+    /**
+     * Add chart information
+     */
+    private void addChartInfo(String metric, String analysisType, List<ChartInfo> chartInfos) {
+        if (!chartInfoMap.containsKey(metric)) {
+            chartInfoMap.put(metric, new HashMap<>());
+        }
+        chartInfoMap.get(metric).put(analysisType, chartInfos);
+    }
+    
+    /**
+     * Get available analysis types for a metric
+     * @param metric metric name
+     * @return set of available analysis types
+     */
+    public Set<String> getAvailableAnalysisTypes(String metric) {
+        return metricAnalysisTypes.getOrDefault(metric, Collections.emptySet());
+    }
+    
+    /**
+     * Get metric description
+     * @param metric metric name
+     * @return metric description
+     */
+    public String getMetricDescription(String metric) {
+        return metricDescriptions.getOrDefault(metric, "");
+    }
+    
+    /**
+     * Get chart information for a metric
+     * @param metric metric name
+     * @param analysisType analysis type
+     * @return list of chart information
+     */
+    public List<ChartInfo> getChartInfo(String metric, String analysisType) {
+        Map<String, List<ChartInfo>> analysisTypeMap = chartInfoMap.getOrDefault(metric, Collections.emptyMap());
+        return analysisTypeMap.getOrDefault(analysisType, Collections.emptyList());
+    }
+}

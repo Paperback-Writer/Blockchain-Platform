@@ -4,14 +4,12 @@ com/book/service/BlockchainDataService$1.class
 com/book/web/BlockchainAnalysisController.class
 com/book/web/ChartImageController.class
 com/book/dao/BlockchainDataDao$1.class
-com/book/config/DatabaseConfig$1.class
 com/book/web/WebConfig.class
 com/book/service/SSHService.class
 com/book/service/RemoteDataService$1.class
 com/book/config/DatabaseConfig.class
 com/book/service/MetricService$ChartInfo.class
 com/book/service/ChartGenerationService.class
-com/book/config/DatabaseConfig$MockDataSource.class
 com/book/domain/Image.class
 com/book/service/BlockchainService.class
 com/book/service/RemoteDataService.class

@@ -66,7 +66,7 @@ public class BlockchainService {
         METRIC_FOLDER_MAP.put("Fund Flow", "Fund_Flow");
         METRIC_FOLDER_MAP.put("Micro Velocity", "Microvelocity");
         METRIC_FOLDER_MAP.put("Rewards", "Trade-offs");
-        METRIC_FOLDER_MAP.put("Transaction Throughput", "Throughout");
+        METRIC_FOLDER_MAP.put("Transaction Throughput", "Throughput");
         METRIC_FOLDER_MAP.put("Transaction Fees", "Transaction_Fee");
         METRIC_FOLDER_MAP.put("Gini Index", "Gini");
     }
@@ -74,73 +74,45 @@ public class BlockchainService {
     private static final Map<String, String> CLUSTER_METRIC_FOLDER_MAP = new HashMap<>();
     static {
         CLUSTER_METRIC_FOLDER_MAP.put("Utxo Active Rate", "UAR");
-        CLUSTER_METRIC_FOLDER_MAP.put("Daily Coin Destroyed", "DCD");
+        CLUSTER_METRIC_FOLDER_MAP.put("Balance VS Mining Concentration", "BM");
         CLUSTER_METRIC_FOLDER_MAP.put("Cross-chain Economic Feature Comparison", "CEC");
         CLUSTER_METRIC_FOLDER_MAP.put("Gini Coefficient", "GC");
-        CLUSTER_METRIC_FOLDER_MAP.put("Micro Velocity", "MV");
+        CLUSTER_METRIC_FOLDER_MAP.put("Mining Reward Concentration", "MRC");
         CLUSTER_METRIC_FOLDER_MAP.put("Top 1 Ratio", "T1R");
         CLUSTER_METRIC_FOLDER_MAP.put("Whale Ratio", "WR");
     }
 
     public List<Image> getBlockchainImages(String cryptocurrency, String metric, String analysisType) {
         List<Image> images = new ArrayList<>();
-        
-        // 日志输出
         logDebugInfo(cryptocurrency, metric, analysisType);
-        
-        // 目录格式化：将analysisType映射为文件夹名称
+
+        List<ChartInfo> chartInfos = metricService.getChartInfo(metric, analysisType);
         String folderAnalysisType = mapAnalysisTypeToFolder(analysisType);
-        
-        // // 1. 获取指标对应的图表信息
-         List<ChartInfo> chartInfos = metricService.getChartInfo(metric, analysisType);
-        
-        // try {
-        //     List<Image> generatedImages = chartGenerationService.generateCharts(
-        //         cryptocurrency, metric, analysisType);
-            
-        //     if (!generatedImages.isEmpty()) {
-        //         images.addAll(generatedImages);
-        //         return images; // 如果成功生成，直接返回
-        //     }
-        // } catch (Exception e) {
-        //     System.err.println("从远程服务器生成图表失败: " + e.getMessage());
-        //     // 继续尝试其他方法获取图片
-        // }
-        
-        // 第2步：尝试从直接文件路径获取图片
+
+        String metricFolder;
+        String basePath; // 用于拼接“对外可访问”的 URL
+
+        if ("cluster".equals(folderAnalysisType)) {
+            metricFolder = CLUSTER_METRIC_FOLDER_MAP.getOrDefault(metric, metric.replace(" ", "_"));
+            // 外部 Context：/blockchain-images/cluster/<abbr>/
+            basePath = "/blockchain-images/cluster/" + metricFolder + "/";
+        } else {
+            metricFolder = METRIC_FOLDER_MAP.getOrDefault(metric, metric.replace(" ", "_"));
+            // 外部 Context：/blockchain-images/<coin>/<metricFolder>/<analysisType>/
+            basePath = "/blockchain-images/" + cryptocurrency + "/" + metricFolder + "/" + folderAnalysisType + "/";
+        }
+
         for (ChartInfo chartInfo : chartInfos) {
-            String chartPath = chartInfo.getPath();
-            String chartFileName = new File(chartPath).getName();
-            
-            // 检查静态目录中是否存在此图片
-            File staticImageFile = new File(PROJECT_BASE_PATH + "/src/main/webapp" + chartPath);
-            if (staticImageFile.exists() && staticImageFile.isFile()) {
-                images.add(new Image(chartInfo.getTitle(), chartPath));
-                continue;
-            }
-            
-            // 如果静态目录不存在，则尝试从加密货币特定目录获取
-            String metricFolder = METRIC_FOLDER_MAP.getOrDefault(metric, metric.replace(" ", "_"));
-            String dataFolder = DATA_FOLDER_MAP.getOrDefault(cryptocurrency, cryptocurrency + "_data");
-            String symbolFolder = SYMBOL_FOLDER_MAP.getOrDefault(cryptocurrency, cryptocurrency.toUpperCase());
-
-            File specificFolder = new File(PROJECT_BASE_PATH + "/src/main/webapp/static/blockchain-images/" +
-                    cryptocurrency + "/" + metricFolder + "/" + folderAnalysisType);
-
-            File specificImageFile = new File(specificFolder, chartFileName);
-
-            if (specificImageFile.exists() && specificImageFile.isFile()) {
-                String path = "/static/blockchain-images/" + cryptocurrency + "/" + metricFolder + "/" + folderAnalysisType + "/" + chartFileName;
-                images.add(new Image(chartInfo.getTitle(), path));
-            }
+            String fileName = new File(chartInfo.getPath()).getName(); // 仅取文件名
+            images.add(new Image(chartInfo.getTitle(), basePath + fileName));
         }
-        
-        // 第3步：如果没有找到预定义的图表，则扫描目录查找所有图片
-        if (images.isEmpty()) {
-            images = scanDirectoryForImages(cryptocurrency, metric, folderAnalysisType);
-        }
-        
+
         System.out.println("最终返回的图片数量: " + images.size());
+        System.out.println("chartInfos.size=" + chartInfos.size());
+        for (int i = 0; i < Math.min(5, chartInfos.size()); i++) {
+            System.out.println("chartInfos[" + i + "] title=" + chartInfos.get(i).getTitle()
+                + ", path=" + chartInfos.get(i).getPath());
+        }
         return images;
     }
     /**
@@ -207,74 +179,75 @@ public class BlockchainService {
         return images;
     }
     public List<Image> getClusterImages(String metric) {
-        List<Image> images = new ArrayList<>();
+        return new ArrayList<>();
+        // List<Image> images = new ArrayList<>();
         
-        // 日志输出
-        System.out.println("------- Cluster模式图片获取调试信息 -------");
-        System.out.println("项目根目录: " + PROJECT_BASE_PATH);
-        System.out.println("图片基础路径: " + IMAGE_BASE_PATH);
-        System.out.println("当前指标: " + metric);
-        System.out.println("分析类型: cluster");
+        // // 日志输出
+        // System.out.println("------- Cluster模式图片获取调试信息 -------");
+        // System.out.println("项目根目录: " + PROJECT_BASE_PATH);
+        // System.out.println("图片基础路径: " + IMAGE_BASE_PATH);
+        // System.out.println("当前指标: " + metric);
+        // System.out.println("分析类型: cluster");
         
-        // 获取映射路径信息 - 使用专门的Cluster指标映射
-        String metricFolder = CLUSTER_METRIC_FOLDER_MAP.getOrDefault(metric, metric.replace(" ", "_"));
-        System.out.println("指标文件夹缩写: " + metricFolder);
+        // // 获取映射路径信息 - 使用专门的Cluster指标映射
+        // String metricFolder = CLUSTER_METRIC_FOLDER_MAP.getOrDefault(metric, metric.replace(" ", "_"));
+        // System.out.println("指标文件夹缩写: " + metricFolder);
         
-        // 构建远程目录路径
-        String remoteFolder = "/local/scratch/master_project_utxo_2025/data/cluster/" + metricFolder + "/";
-        System.out.println("使用cluster通用路径: " + remoteFolder);
+        // // 构建远程目录路径
+        // String remoteFolder = "/local/scratch/master_project_utxo_2025/data/cluster/" + metricFolder + "/";
+        // System.out.println("使用cluster通用路径: " + remoteFolder);
         
-        // 构建本地目录路径
-        String localFolder = IMAGE_BASE_PATH + "cluster/" + metricFolder + "/";
-        new File(localFolder).mkdirs();
+        // // 构建本地目录路径
+        // String localFolder = IMAGE_BASE_PATH + "cluster/" + metricFolder + "/";
+        // new File(localFolder).mkdirs();
         
-        try {
-            sshService.connect("abacus-2.ifi.uzh.ch", "zhongxingdu", "my99jsyDu@");
+        // try {
+        //     sshService.connect("abacus-2.ifi.uzh.ch", "zhongxingdu", "my99jsyDu@");
             
-            // 扫描远程png文件
-            String command = "ls " + remoteFolder + "*.png";
-            System.out.println("执行命令: " + command);
-            String result = sshService.executeCommand(command);
-            System.out.println("远程目录扫描结果:\n" + result);
+        //     // 扫描远程png文件
+        //     String command = "ls " + remoteFolder + "*.png";
+        //     System.out.println("执行命令: " + command);
+        //     String result = sshService.executeCommand(command);
+        //     System.out.println("远程目录扫描结果:\n" + result);
             
-            // 检查结果是否为空
-            if (result == null || result.trim().isEmpty()) {
-                System.out.println("远程目录没有找到图片文件");
-                return images;
-            }
+        //     // 检查结果是否为空
+        //     if (result == null || result.trim().isEmpty()) {
+        //         System.out.println("远程目录没有找到图片文件");
+        //         return images;
+        //     }
             
-            String[] imagePaths = result.split("\n");
+        //     String[] imagePaths = result.split("\n");
             
-            for (String remoteImagePath : imagePaths) {
-                String fileName = remoteImagePath.substring(remoteImagePath.lastIndexOf('/') + 1);
-                String localFilePath = localFolder + fileName;
+        //     for (String remoteImagePath : imagePaths) {
+        //         String fileName = remoteImagePath.substring(remoteImagePath.lastIndexOf('/') + 1);
+        //         String localFilePath = localFolder + fileName;
                 
-                // 下载到本地
-                System.out.println("下载文件 - 远程路径: " + remoteImagePath + ", 本地路径: " + localFilePath);
-                sshService.downloadFile(remoteImagePath, localFilePath);
-                System.out.println("文件下载成功!");
+        //         // 下载到本地
+        //         System.out.println("下载文件 - 远程路径: " + remoteImagePath + ", 本地路径: " + localFilePath);
+        //         sshService.downloadFile(remoteImagePath, localFilePath);
+        //         System.out.println("文件下载成功!");
                 
-                // 构建Web路径
-                String webPath = "/static/blockchain-images/cluster/" + metricFolder + "/" + fileName;
+        //         // 构建Web路径
+        //         String webPath = "/static/blockchain-images/cluster/" + metricFolder + "/" + fileName;
                 
-                // 为图片生成更友好的标题
-                String title = getClusterImageTitle(fileName, metric);
-                images.add(new Image(fileName, webPath, title));
-            }
+        //         // 为图片生成更友好的标题
+        //         String title = getClusterImageTitle(fileName, metric);
+        //         images.add(new Image(fileName, webPath, title));
+        //     }
             
-        } catch (Exception e) {
-            System.err.println("远程扫描或下载图片失败: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            try {
-                sshService.disconnect();
-                System.out.println("已断开SSH连接");
-            } catch (Exception e) {
-                System.err.println("断开SSH连接失败: " + e.getMessage());
-            }
-        }
+        // } catch (Exception e) {
+        //     System.err.println("远程扫描或下载图片失败: " + e.getMessage());
+        //     e.printStackTrace();
+        // } finally {
+        //     try {
+        //         sshService.disconnect();
+        //         System.out.println("已断开SSH连接");
+        //     } catch (Exception e) {
+        //         System.err.println("断开SSH连接失败: " + e.getMessage());
+        //     }
+        // }
         
-        return images;
+        // return images;
     }
 
 
@@ -326,4 +299,63 @@ public class BlockchainService {
         System.out.println("分析类型: " + analysisType);
         System.out.println("文件夹分析类型: " + mapAnalysisTypeToFolder(analysisType));
     }
+
+    private static final String REMOTE_BASE = "/local/scratch/master_project_utxo_2025/graph";
+
+    public void syncImagesFromRemote(String cryptocurrency, String metric, String analysisType) throws Exception {
+        
+        final String LOCAL_BASE = "/home/kirisamarisa123/Blockchain-Platform/blockchain-images";
+
+        // 映射
+        String metricFolder = METRIC_FOLDER_MAP.getOrDefault(metric, metric.replace(" ", "_"));
+        String symbol      = SYMBOL_FOLDER_MAP.getOrDefault(cryptocurrency, cryptocurrency.toUpperCase());
+
+        // === 远端目录（按你最新说明走 /graph/...）===
+        final String remoteFolder;
+        if ("cluster".equalsIgnoreCase(analysisType)) {
+            // cluster 模式：/graph/cluster/<缩写>/
+            String clusterMetric = CLUSTER_METRIC_FOLDER_MAP.getOrDefault(metric, metric.replace(" ", "_"));
+            remoteFolder = REMOTE_BASE + "/cluster/" + clusterMetric + "/";
+        } else {
+            // 非 cluster：/graph/<SYMBOL>/<MetricFolder>/
+            remoteFolder = REMOTE_BASE + "/" + symbol + "/" + metricFolder + "/";
+        }
+
+        // === 本地落盘目录（保留你原先的本地结构，analysisType 只存在本地）===
+        File localDir = new File(
+            LOCAL_BASE + "/" + (
+                "cluster".equalsIgnoreCase(analysisType)
+                ? "cluster/" + CLUSTER_METRIC_FOLDER_MAP.getOrDefault(metric, metric.replace(" ", "_"))
+                : cryptocurrency + "/" + metricFolder + "/" + analysisType
+            )
+        );
+        if (!localDir.exists()) localDir.mkdirs();
+
+        // 连接并拉取
+        sshService.connect("abacus-2.ifi.uzh.ch", "zhongxingdu", "my99jsyDu@");
+        try {
+            // 列出远端 PNG（目录里直接放图片，没有 static 子目录）
+            String cmd = "ls -1 " + remoteFolder + "*.png 2>/dev/null || true";
+            String ls  = sshService.executeCommand(cmd);
+
+            if (ls == null || ls.trim().isEmpty()) {
+                System.out.println("远端没有找到 PNG 文件: " + remoteFolder);
+                return;
+            }
+
+            for (String line : ls.split("\n")) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+                String fileName = line.substring(line.lastIndexOf('/') + 1);
+                File localFile  = new File(localDir, fileName);
+                sshService.downloadFile(line, localFile.getAbsolutePath()); // 覆盖即可
+            }
+        } finally {
+            sshService.disconnect();
+        }
+    }
+
+
 }
+
+

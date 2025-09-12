@@ -20,7 +20,6 @@ public class BlockchainDataDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // 根据条件查询数据
     public List<BlockchainDataEntity> findByCriteria(
             String cryptocurrency, 
             String metric, 
@@ -50,7 +49,6 @@ public class BlockchainDataDao {
         );
     }
     
-    // 插入数据
     public void insertData(BlockchainDataEntity data) {
         String sql = "INSERT INTO blockchain_data " +
                      "(cryptocurrency, metric, analysis_type, x_value, y_value, additional_info) " +

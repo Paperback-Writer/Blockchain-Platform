@@ -43,7 +43,7 @@ public class SSHService {
      * @throws IOException 输入输出异常
      */
     public String executeCommand(String command) throws JSchException, IOException {
-        System.out.println("执行命令: " + command);
+        System.out.println("execute command " + command);
         
         channel = (ChannelExec) session.openChannel("exec");
         channel.setCommand(command);
@@ -67,54 +67,49 @@ public class SSHService {
         
         // 如果错误流中有内容，则打印错误信息
         if (errorStream.size() > 0) {
-            System.out.println("命令执行错误: " + errorStream.toString());
+            System.out.println("Fail execution " + errorStream.toString());
         }
         
         return outputStream.toString();
     }
     
     /**
-     * 从远程服务器下载文件
-     * @param remoteFilePath 远程文件路径
-     * @param localFilePath 本地文件路径
-     * @throws JSchException SSH连接异常
-     * @throws SftpException SFTP异常
+     * download from remote
+     * @param remoteFilePath 
+     * @param localFilePath 
+     * @throws JSchException 
+     * @throws SftpException 
      */
     public void downloadFile(String remoteFilePath, String localFilePath) throws JSchException, SftpException {
-        System.out.println("下载文件 - 远程路径: " + remoteFilePath + ", 本地路径: " + localFilePath);
+        System.out.println("download - remote path: " + remoteFilePath + ", local path: " + localFilePath);
         
         ChannelSftp channelSftp = (ChannelSftp) session.openChannel("sftp");
         channelSftp.connect();
         
         try {
-            // 确保本地目录存在
             File localFile = new File(localFilePath);
             File parentDir = localFile.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
                 boolean dirCreated = parentDir.mkdirs();
                 if (dirCreated) {
-                    System.out.println("创建目录: " + parentDir.getAbsolutePath());
+                    System.out.println("create path: " + parentDir.getAbsolutePath());
                 }
             }
             
-            // 下载文件
             channelSftp.get(remoteFilePath, localFilePath);
-            System.out.println("文件下载成功!");
+            System.out.println("Success!");
         } finally {
             channelSftp.disconnect();
         }
     }
     
-    /**
-     * 断开连接
-     */
     public void disconnect() {
         if (channel != null && channel.isConnected()) {
             channel.disconnect();
         }
         if (session != null && session.isConnected()) {
             session.disconnect();
-            System.out.println("已断开SSH连接");
+            System.out.println("Disconnect SSH");
         }
     }
 }

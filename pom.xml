@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.book</groupId>
-    <artifactId>book</artifactId>
+    <groupId>com.blockchain</groupId>
+    <artifactId>blockchain</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
@@ -129,6 +129,7 @@
     </dependencies>
 
     <build>
+        <finalName>blockchain</finalName>
         <plugins>
             <!-- 编译器插件 -->
             <plugin>
@@ -145,7 +146,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Jetty 插件 -->
+            <!-- Jetty 插件 - 用于开发 -->
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
@@ -167,6 +168,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.2</version>
+                <configuration>
+                    <webXml>src\main\webapp\WEB-INF\web.xml</webXml>
+                </configuration>
             </plugin>
 
             <!-- Surefire 插件 -->
